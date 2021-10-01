@@ -2,7 +2,7 @@
 
 ## General Approach
 
-You may find yourself in the position that MechWolf's included components aren't what you need.
+You may find yourself in the position of needing a component that is currently not included in MechWolf.
 In that case, you'll have to create your own component.
 Here's how:
 
