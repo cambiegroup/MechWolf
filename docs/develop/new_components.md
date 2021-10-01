@@ -33,14 +33,14 @@ Here's how:
     The values in the base state dictionary need to be parsable into valid values, the same as if they were passed as keyword arguments to `Protocol.add()`.
     In fact, under the hood, that is exactly what is happening.
     At the end of your protocol, `Protocol.compile()` adds a procedure for each `ActiveComponent` in the protocol to return to its base state.
-    In addition, when the component is not explicity being used, the component will default to its base state.
+    In addition, when the component is not explicitly being used, the component will default to its base state.
 
 5.  **Give it a method to update the hardware's state.**  
     The job of the update method is to make the object's real-world state match its virtual representation.
     The update method must be asynchronous and be called `_update()`.
     This is where the hardware interfacing happens.
 
-    Note, however, that because MechWolf objects have two distinct uses (being manipulated before runtime and actually used during runtime to control the hardware), components must be able to be instantiated without respect to it's real-world configuration.
+    Note, however, that because MechWolf objects have two distinct uses (being manipulated before runtime and actually used during runtime to control the hardware), components must be able to be instantiated without respect to their real-world configuration.
     For example, this means that, to enforce a level of abstraction, you shouldn't need to know what serial port your client is talking to your component in order to manipulate it when creating your script.
     The object that is being run on your client _would_ need to know that though, so the object has to be able to support both uses.
 
