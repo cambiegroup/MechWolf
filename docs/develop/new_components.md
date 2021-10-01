@@ -8,7 +8,7 @@ Here's how:
 
 1.  **Decide what kind of component it is.**  
     If you're trying to make a new kind of pump, for example, you'll want to be inheriting from `Pump`.
-    For components being controlled (i.e. not aliases of `Component`), you'll have to create a subclass of `ActiveComponent`.
+    For components being controlled (_i.e._ not aliases of `Component`), you'll have to create a subclass of `ActiveComponent`.
 
 2.  **Create a new class.**  
     If you're struggling, see [the official Python docs](https://docs.python.org/3/tutorial/classes.html), a handy [tutorial on classes](https://www.tutorialspoint.com/python3/python_classes_objects.htm), or look at MechWolf's source code.
