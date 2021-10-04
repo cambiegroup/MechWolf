@@ -6,3 +6,4 @@ from .labjack import LabJack
 from .varian import VarianPump
 from .vici import ViciValve
 from .vicipump import ViciPump
+from .knauerpump import KnauerPump
