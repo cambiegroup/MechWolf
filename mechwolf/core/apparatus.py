@@ -3,9 +3,9 @@ from typing import Iterable, List, Mapping, Optional, Set, Union
 from warnings import warn
 
 import networkx as nx
-from graphviz import Digraph
 from IPython import get_ipython
 from IPython.display import Markdown
+from graphviz import Digraph
 from terminaltables import AsciiTable, GithubFlavoredMarkdownTable
 
 from .. import _ureg
@@ -354,8 +354,7 @@ class Apparatus(object):
             return False
 
         # valve checking
-        valves = [x for x in self.components if isinstance(x, Valve)]
-        for valve in valves:
+        for valve in self[Valve]:
 
             # ensure that valve's mapping components are part of apparatus
             if isinstance(valve.mapping, Mapping):
