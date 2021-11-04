@@ -50,7 +50,7 @@ Arguments:
 Returns:
 
 - A description of the return value, if a function.
-  This should be a list, even if its the only element.
+  This should be a list, even if it's the only element.
   Note that each sentence should also be on a separate line aligned with the first letter of the first line.
 
 Raises:
@@ -101,7 +101,7 @@ foo(1, "two") # Mypy will catch this bug!
 ```
 
 All code in MechWolf is fully type annotated in this manner.
-Another benefit comes of using type annotations: it allows for better typehinting, which in turn makes developing the library require less cognitive burden.
+Another benefit comes of using type annotations: it allows for better type hinting, which in turn makes developing the library require less cognitive burden.
 Many modern text editors and IDEs are able to take advantage of type hints to provide a better, faster development experience.
 For example, VSCode shows the type of variables when they are hovered over by looking back at its type annotation.
 

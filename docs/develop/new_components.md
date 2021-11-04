@@ -2,13 +2,13 @@
 
 ## General Approach
 
-You may find yourself in the position that MechWolf's included components aren't what you need.
+You may find yourself in the position of needing a component that is currently not included in MechWolf.
 In that case, you'll have to create your own component.
 Here's how:
 
 1.  **Decide what kind of component it is.**  
     If you're trying to make a new kind of pump, for example, you'll want to be inheriting from `Pump`.
-    For components being controlled (i.e. not aliases of `Component`), you'll have to create a subclass of `ActiveComponent`.
+    For components being controlled (_i.e._ not aliases of `Component`), you'll have to create a subclass of `ActiveComponent`.
 
 2.  **Create a new class.**  
     If you're struggling, see [the official Python docs](https://docs.python.org/3/tutorial/classes.html), a handy [tutorial on classes](https://www.tutorialspoint.com/python3/python_classes_objects.htm), or look at MechWolf's source code.
@@ -33,14 +33,14 @@ Here's how:
     The values in the base state dictionary need to be parsable into valid values, the same as if they were passed as keyword arguments to `Protocol.add()`.
     In fact, under the hood, that is exactly what is happening.
     At the end of your protocol, `Protocol.compile()` adds a procedure for each `ActiveComponent` in the protocol to return to its base state.
-    In addition, when the component is not explicity being used, the component will default to its base state.
+    In addition, when the component is not explicitly being used, the component will default to its base state.
 
 5.  **Give it a method to update the hardware's state.**  
     The job of the update method is to make the object's real-world state match its virtual representation.
     The update method must be asynchronous and be called `_update()`.
     This is where the hardware interfacing happens.
 
-    Note, however, that because MechWolf objects have two distinct uses (being manipulated before runtime and actually used during runtime to control the hardware), components must be able to be instantiated without respect to it's real-world configuration.
+    Note, however, that because MechWolf objects have two distinct uses (being manipulated before runtime and actually used during runtime to control the hardware), components must be able to be instantiated without respect to their real-world configuration.
     For example, this means that, to enforce a level of abstraction, you shouldn't need to know what serial port your client is talking to your component in order to manipulate it when creating your script.
     The object that is being run on your client _would_ need to know that though, so the object has to be able to support both uses.
 
@@ -151,35 +151,47 @@ actually _need_ the serial package in order to instantiate a
 be able to instantiate `components.vici.ViciValve` objects on
 devices without the client extras installed (which includes the serial
 package), such as when designing apparatuses on your personal computer.
-For that reason, we wrap `import serial` in a try-except clause:
+For that reason, the import statement (in this case `import aioserial`) is 
+placed in the class `__enter__` magic method (also called dunder method, from
+the double underscore).
 
-<div class="literalinclude" data-lines="3-6">
+<div class="literalinclude" data-lines="38-40">
 
-../../../mechwolf/components/vici.py
+../../../mechwolf/components/contrib/vici.py
+
+</div>
+
+The `__enter__` magic method is then executed when entering the component's 
+context, _i.e._ in the experiment main function.
+
+<div class="literalinclude" data-lines="43-47">
+
+../../../mechwolf/core/execute.py
 
 </div>
 
 Because Vici valves are subclasses of
-`components.valve.Valve`, we also need to import
-`components.valve.Valve`. Since `vici.py` is in the components
-directory, we do a local import:
+`components.stdlib.Valve`, we also need to import
+`components.stdlib.Valve`.
+Since `vici.py` is in the `components/contrib` folder, while
+`Valve` is in `components/stdlib`, we can use a local import:
 
-<div class="literalinclude" data-lines="8">
+<div class="literalinclude" data-lines="3">
 
-../../../mechwolf/components/vici.py
+../../../mechwolf/components/contrib/vici.py
 
 </div>
 
 If we were creating the object in a different directory, we would import
-`components.valve.Valve` the usual way:
+`components.stdlib.Valve` the usual way:
 
     from mechwolf import Valve
 
-Now that we've got the modules we'll need, let's create the class:
+Now that we have got the modules that we will need, let's create the class:
 
-<div class="literalinclude" data-lines="10-11">
+<div class="literalinclude" data-lines="6-8">
 
-../../../mechwolf/components/vici.py
+../../../mechwolf/components/contrib/vici.py
 
 </div>
 
@@ -187,7 +199,7 @@ And we'll create an `__init__()` method:
 
 <div class="literalinclude" data-pyobject="ViciValve.__init__">
 
-../../../mechwolf/components/vici.py
+../../../mechwolf/components/contrib/vici.py
 
 </div>
 
@@ -197,8 +209,15 @@ Note that the arguments include the ones required by
 the client.
 
 We can skip adding a base state because
-`components.valve.Valve` already has one, meaning that
+`components.stdlib.Valve` already has one, meaning that
 `components.vici.ViciValve` will inherit it automatically.
+
+<div class="literalinclude" data-lines="34">
+
+../../../mechwolf/components/stdlib/valve.py
+
+</div>
+
 
 Now for the important parts: we need to make the object be able to make
 its real-world state match the object's state. We do that with the
@@ -208,7 +227,7 @@ component that allows for execution:
 
 <div class="literalinclude" data-pyobject="ViciValve.update">
 
-../../../mechwolf/components/vici.py
+../../../mechwolf/components/contrib/vici.py
 
 </div>
 
@@ -218,9 +237,9 @@ can understand.
 
 One thing to know about serial connections is that they need to be
 opened and closed. However, you don't want to open and close the
-connection after every procedure, especially if you'll be doing a lot of
-procedures in a short duration. Instead, you want to open the connection
-once at the beginning and close it at the end when you're done with the
+connection after every procedure, especially if you will be doing a lot of
+procedures in a short interval of time. Instead, you want to open the connection
+once at the beginning and close it at the end when you are done with the
 component. MechWolf can handle that automatically if you give it some
 additional information, namely functions called `__enter__` and
 `__exit__`.
@@ -230,7 +249,7 @@ start the client and then returns `self`:
 
 <div class="literalinclude" data-pyobject="ViciValve.__enter__">
 
-../../../mechwolf/components/vici.py
+../../../mechwolf/components/contrib/vici.py
 
 </div>
 
@@ -238,11 +257,11 @@ Similarly, `__exit__` closes the connection:
 
 <div class="literalinclude" data-pyobject="ViciValve.__exit__">
 
-../../../mechwolf/components/vici.py
+../../../mechwolf/components/contrib/vici.py
 
 </div>
 
-`343` and this [StackOverflow
+[PEP 343](https://www.python.org/dev/peps/pep-0343/) and this [StackOverflow
 answer](https://stackoverflow.com/questions/1984325/explaining-pythons-enter-and-exit)
 have more about information about how to use `__enter__` and `__exit__`
 methods.
